@@ -1,17 +1,47 @@
 <%-- 
     Document   : com.pronua.dao
-    Created on : 26 nov 2025, 9:01:31 p.m.
+    Created on : 26 nov 2025, 9:01:31?p.m.
     Author     : malencastro
 --%>
 
-<%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <body>
-        <h1>Hello World!</h1>
-    </body>
-</html>
+
+package com.pronua.dao;
+import com.pronua.model.Produccion;
+import com.pronua.util.DBConnection;
+import java.sql.*;
+import java.util.*;
+
+public class ProduccionDAO {
+    public void insertar(Produccion p) throws SQLException {
+        String sql = "INSERT INTO produccion (producto_codigo, planta, fecha, cantidad) VALUES (?, ?, ?, ?)";
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, p.getProductoCodigo());
+            ps.setString(2, p.getPlanta());
+            ps.setDate(3, new java.sql.Date(p.getFecha().getTime()));
+            ps.setDouble(4, p.getCantidad());
+            ps.executeUpdate();
+        }
+    }
+
+    public List<Produccion> listarPorRango(Date desde, Date hasta) throws SQLException {
+        String sql = "SELECT * FROM produccion WHERE fecha BETWEEN ? AND ?";
+        List<Produccion> res = new ArrayList<>();
+        try (Connection c = DBConnection.getConnection();
+             PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setDate(1, new java.sql.Date(desde.getTime()));
+            ps.setDate(2, new java.sql.Date(hasta.getTime()));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                Produccion p = new Produccion();
+                p.setId(rs.getInt("id"));
+                p.setProductoCodigo(rs.getString("producto_codigo"));
+                p.setPlanta(rs.getString("planta"));
+                p.setFecha(rs.getDate("fecha"));
+                p.setCantidad(rs.getDouble("cantidad"));
+                res.add(p);
+            }
+        }
+        return res;
+    }
+}
