@@ -1,0 +1,8 @@
+/src                 → Código fuente (backend, frontend)
+/docs                → Manuales, diagramas, especificaciones
+/tests               → Pruebas unitarias y funcionales
+/database            → Scripts SQL de tablas, vistas, catálogos
+/config              → Archivos de configuración
+README.md            → Descripción general del proyecto
+CONTRIBUTING.md      → Guía formal de contribución
+
