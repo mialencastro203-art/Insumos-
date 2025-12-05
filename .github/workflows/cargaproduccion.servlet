@@ -1,0 +1,32 @@
+package com.pronua.controller;
+import com.pronua.util.ExcelReader;
+import com.pronua.model.Produccion;
+import com.pronua.dao.ProduccionDAO;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.*;
+import java.io.*;
+import java.sql.SQLException;
+import java.util.List;
+
+@WebServlet("/cargarProduccion")
+@MultipartConfig
+public class CargarProduccionServlet extends HttpServlet {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        Part filePart = req.getPart("archivo"); // name="archivo" en el form
+        File temp = File.createTempFile("prod", ".xlsx");
+        filePart.write(temp.getAbsolutePath());
+        List<Produccion> lista = ExcelReader.leerProduccion(temp);
+        ProduccionDAO dao = new ProduccionDAO();
+        try {
+            for (Produccion p : lista) dao.insertar(p);
+            resp.sendRedirect("views/cargarProduccion.jsp?ok=1");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            resp.sendRedirect("views/cargarProduccion.jsp?err=1");
+        } finally {
+            temp.delete();
+        }
+    }
+}
