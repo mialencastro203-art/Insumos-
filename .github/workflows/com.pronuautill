@@ -1,0 +1,27 @@
+package com.pronua.util;
+import org.apache.poi.ss.usermodel.*;
+import java.io.*;
+import java.util.*;
+import com.pronua.model.Produccion;
+
+public class ExcelReader {
+    public static List<Produccion> leerProduccion(File file) {
+        List<Produccion> lista = new ArrayList<>();
+        try (InputStream is = new FileInputStream(file)) {
+            Workbook wb = WorkbookFactory.create(is);
+            Sheet s = wb.getSheetAt(0);
+            for (Row r : s) {
+                if (r.getRowNum() == 0) continue; // omite header
+                Produccion p = new Produccion();
+                p.setProductoCodigo(r.getCell(0).getStringCellValue());
+                p.setPlanta(r.getCell(1).getStringCellValue());
+                p.setFecha(r.getCell(2).getDateCellValue());
+                p.setCantidad(r.getCell(3).getNumericCellValue());
+                lista.add(p);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return lista;
+    }
+}
